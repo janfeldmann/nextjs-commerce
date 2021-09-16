@@ -5,8 +5,42 @@ import Button from '@components/ui/Button'
 import { useUI } from '@components/ui/context'
 import SidebarLayout from '@components/common/SidebarLayout'
 
-const PaymentMethodView: FC = () => {
+import useBillingAddressUpdate from '@framework/cart/use-checkout-billing-address-update'
+import useShippingAddressUpdate from '@framework/cart/use-checkout-shipping-address-update'
+import { AddressInput } from '@framework/schema'
+
+const ShippingMethodView: FC = () => {
   const { setSidebarView } = useUI()
+
+  const billingAddressUpdate = useBillingAddressUpdate()
+  const shippingAddressUpdate = useShippingAddressUpdate()
+
+  const saveAddresses = async () => {
+    const address = {
+      country: 'PL',
+      firstName: 'John',
+      lastName: 'Smith',
+      streetAddress1: 'ul. Tęczowa 7',
+      postalCode: '53-030',
+      city: 'Wroclaw',
+    } as AddressInput
+
+    try {
+      await billingAddressUpdate({
+        billingAddress: address,
+      })
+    } catch (err) {
+      console.log(err)
+    }
+
+    try {
+      await shippingAddressUpdate({
+        shippingAddress: address,
+      })
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   return (
     <SidebarLayout handleBack={() => setSidebarView('CHECKOUT_VIEW')}>
@@ -67,7 +101,12 @@ const PaymentMethodView: FC = () => {
         </div>
       </div>
       <div className="sticky z-20 bottom-0 w-full right-0 left-0 py-12 bg-accent-0 border-t border-accent-2 px-6">
-        <Button Component="a" width="100%" variant="ghost">
+        <Button
+          onClick={saveAddresses}
+          Component="a"
+          width="100%"
+          variant="ghost"
+        >
           Continue
         </Button>
       </div>
@@ -75,4 +114,4 @@ const PaymentMethodView: FC = () => {
   )
 }
 
-export default PaymentMethodView
+export default ShippingMethodView

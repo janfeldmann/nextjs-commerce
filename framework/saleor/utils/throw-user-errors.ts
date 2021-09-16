@@ -1,8 +1,8 @@
 import { ValidationError } from '@commerce/utils/errors'
 
-import { CheckoutError, CheckoutErrorCode, AppError, AccountError, AccountErrorCode } from '../schema'
+import { CheckoutError, CheckoutErrorCode, AppError, AccountError, AccountErrorCode, PaymentError } from '../schema'
 
-export type UserErrors = Array<CheckoutError | AccountError | AppError>
+export type UserErrors = Array<CheckoutError | AccountError | AppError | PaymentError>
 
 export type UserErrorCode = CheckoutErrorCode | AccountErrorCode | null | undefined
 

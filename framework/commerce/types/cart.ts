@@ -1,3 +1,9 @@
+import {
+  AddressInput,
+  CheckoutComplete,
+  Order,
+  PaymentInput,
+} from '@framework/schema'
 import type { Discount, Measurement, Image } from './common'
 
 export type SelectedOption = {
@@ -60,6 +66,8 @@ export type ProductVariant = {
 export type Cart = {
   id: string
   // ID of the customer to which the cart belongs.
+  token: string
+  // Token of the checkout to which the cart belongs.
   customerId?: string
   // The email assigned to this cart
   email?: string
@@ -106,6 +114,8 @@ export type CartHooks<T extends CartTypes = CartTypes> = {
   addItem: AddItemHook<T>
   updateItem: UpdateItemHook<T>
   removeItem: RemoveItemHook<T>
+  updateDelivery: UpdateDeliveryHook<T>
+  updateBillingAddress: UpdateBillingAddressHook<T>
 }
 
 export type GetCartHook<T extends CartTypes = CartTypes> = {
@@ -129,6 +139,30 @@ export type UpdateItemHook<T extends CartTypes = CartTypes> = {
   fetcherInput: { itemId: string; item: T['itemBody'] }
   body: { itemId: string; item: T['itemBody'] }
   actionInput: T['itemBody'] & { id: string }
+}
+
+export type UpdateDeliveryHook<T extends CartTypes = CartTypes> = {
+  data: T['cart'] | null
+  input: { deliveryMethodId?: string; wait?: number }
+  fetcherInput: { deliveryMethodId?: string }
+  body: { deliveryMethodId?: string }
+  actionInput: { deliveryMethodId: string }
+}
+
+export type UpdateBillingAddressHook<T extends CartTypes = CartTypes> = {
+  data: T['cart'] | null
+  input: { billingAddress?: AddressInput; wait?: number }
+  fetcherInput: { billingAddress?: AddressInput }
+  body: { billingAddress?: AddressInput }
+  actionInput: { billingAddress: AddressInput }
+}
+
+export type UpdateShippingAddressHook<T extends CartTypes = CartTypes> = {
+  data: T['cart'] | null
+  input: { shippingAddress?: AddressInput; wait?: number }
+  fetcherInput: { shippingAddress?: AddressInput }
+  body: { shippingAddress?: AddressInput }
+  actionInput: { shippingAddress: AddressInput }
 }
 
 export type RemoveItemHook<T extends CartTypes = CartTypes> = {

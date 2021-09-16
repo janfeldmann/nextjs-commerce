@@ -11,6 +11,7 @@ import type {
   Customer,
   Wishlist,
   Cart,
+  Checkout,
   Product,
   Signup,
   Login,
@@ -27,7 +28,14 @@ export type Provider = CommerceConfig & {
     useCart?: SWRHook<Cart.GetCartHook>
     useAddItem?: MutationHook<Cart.AddItemHook>
     useUpdateItem?: MutationHook<Cart.UpdateItemHook>
+    useUpdateDeliveryMethod?: MutationHook<Cart.UpdateDeliveryHook>
+    useUpdateBillingAddress?: MutationHook<Cart.UpdateBillingAddressHook>
+    useUpdateShippingAddress?: MutationHook<Cart.UpdateShippingAddressHook>
     useRemoveItem?: MutationHook<Cart.RemoveItemHook>
+  }
+  checkout?: {
+    usePayment: MutationHook<Checkout.CreatePaymentHook>
+    useCheckoutComplete?: MutationHook<Checkout.CheckoutCompleteHook>
   }
   wishlist?: {
     useWishlist?: SWRHook<Wishlist.GetWishlistHook>

@@ -1477,6 +1477,11 @@ export type Checkout = Node &
     channel: Channel
     billingAddress?: Maybe<Address>
     shippingAddress?: Maybe<Address>
+    deliveryMethod?: Maybe<ShippingMethod | CollectionPoint>
+    availableShippingMethods?: [ShippingMethod]
+    availableCollectionPoints?: [CollectionPoint]
+    order?: Maybe<Order>
+    payment?: Maybe<Payment>
     note: Scalars['String']
     discount?: Maybe<Money>
     discountName?: Maybe<Scalars['String']>
@@ -1547,6 +1552,7 @@ export type CheckoutComplete = {
   confirmationData?: Maybe<Scalars['JSONString']>
   /** @deprecated Use errors field instead. This field will be removed in Saleor 4.0. */
   checkoutErrors: Array<CheckoutError>
+  checkout?: Maybe<Checkout>
   errors: Array<CheckoutError>
 }
 
@@ -1565,6 +1571,14 @@ export type CheckoutCountableEdge = {
   node: Checkout
   /** A cursor for use in pagination. */
   cursor: Scalars['String']
+}
+
+/** Create a new checkout. */
+export type CheckoutDeliveryMethodUpdate = {
+  __typename?: 'CheckoutDeliveryMethodUpdate'
+  /** Whether the checkout was created or the current active one was returned. Refer to checkoutLinesAdd and checkoutLinesUpdate to merge a cart with an active checkout.DEPRECATED: Will be removed in Saleor 4.0. Always returns True. */
+  errors: Array<CheckoutError>
+  checkout?: Maybe<Checkout>
 }
 
 /** Create a new checkout. */
@@ -1774,8 +1788,8 @@ export type CheckoutShippingAddressUpdate = {
 }
 
 /** Updates the shipping address of the checkout. */
-export type CheckoutShippingMethodUpdate = {
-  __typename?: 'CheckoutShippingMethodUpdate'
+export type CheckoutDeliveryMethodUpdate = {
+  __typename?: 'CheckoutDeliveryMethodUpdate'
   /** An updated checkout. */
   checkout?: Maybe<Checkout>
   /** @deprecated Use errors field instead. This field will be removed in Saleor 4.0. */
@@ -4034,6 +4048,14 @@ export type MoneyRange = {
   stop?: Maybe<Money>
 }
 
+export type CollectionPoint = {
+  __typename?: 'Warehouse'
+  id: Scalars['String']
+  name?: Scalars['String']
+  address?: Maybe<Address>
+  price?: Maybe<Money>
+}
+
 export type MoveProductInput = {
   /** The ID of the product to move. */
   productId: Scalars['ID']
@@ -4414,7 +4436,7 @@ export type Mutation = {
   /** Update shipping address in the existing checkout. */
   checkoutShippingAddressUpdate?: Maybe<CheckoutShippingAddressUpdate>
   /** Updates the shipping address of the checkout. */
-  checkoutShippingMethodUpdate?: Maybe<CheckoutShippingMethodUpdate>
+  checkoutDeliveryMethodUpdate?: Maybe<CheckoutDeliveryMethodUpdate>
   /** Update language code in the existing checkout. */
   checkoutLanguageCodeUpdate?: Maybe<CheckoutLanguageCodeUpdate>
   /** Creates new channel. */
@@ -5417,9 +5439,13 @@ export type MutationCheckoutShippingAddressUpdateArgs = {
   shippingAddress: AddressInput
 }
 
-export type MutationCheckoutShippingMethodUpdateArgs = {
+export type MutationCheckoutCompleteArgs = {
+  checkoutId: Scalars['ID']
+}
+
+export type MutationCheckoutDeliveryMethodUpdateArgs = {
   checkoutId?: Maybe<Scalars['ID']>
-  shippingMethodId: Scalars['ID']
+  deliveryMethodId: Scalars['ID']
 }
 
 export type MutationCheckoutLanguageCodeUpdateArgs = {

@@ -1,5 +1,5 @@
 import type { Cart as CoreCart } from '@commerce/types'
-import { CheckoutLine } from './schema'
+import { AddressInput, Address, CheckoutLine, ShippingMethod, CollectionPoint, Order, Payment } from './schema'
 
 export type SaleorCheckout = {
   id: string
@@ -9,9 +9,26 @@ export type SaleorCheckout = {
 
 export type Cart = CoreCart.Cart & {
   lineItems: LineItem[]
+  billingAddress?: Address
+  shippingAddress?: Address
+  deliveryMethod?: ShippingMethod | CollectionPoint
+  availableShippingMethods?: [ShippingMethod]
+  availableCollectionPoints?: [CollectionPoint]
+  payment?: Payment
+  order?: Order
 }
+
 export interface LineItem extends CoreCart.LineItem {
   options?: any[]
+}
+export interface UpdateDelivery {
+  deliveryMethodId: string
+}
+export interface UpdateBillingAddress {
+  billingAddress: AddressInput
+}
+export interface UpdateShippingAddress {
+  shippingAddress: AddressInput
 }
 
 /**

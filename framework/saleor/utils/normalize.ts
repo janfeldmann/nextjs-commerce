@@ -1,6 +1,17 @@
 import { Product } from '@commerce/types/product'
 
-import { Product as SaleorProduct, Checkout, CheckoutLine, Money, ProductVariant } from '../schema'
+import {
+  Product as SaleorProduct,
+  Checkout,
+  CheckoutLine,
+  Money,
+  ProductVariant,
+  Address,
+  ShippingMethod,
+  CollectionPoint,
+  Order,
+  Payment,
+} from '../schema'
 
 import type { Cart, LineItem } from '../types'
 
@@ -96,6 +107,14 @@ export function normalizeCart(checkout: Checkout): Cart {
     customerId: '',
     email: '',
     createdAt: checkout.created,
+    billingAddress: checkout.billingAddress as Address,
+    shippingAddress: checkout.billingAddress as Address,
+    deliveryMethod: checkout.deliveryMethod as ShippingMethod | CollectionPoint,
+    availableShippingMethods: checkout.availableShippingMethods as [ShippingMethod],
+    availableCollectionPoints: checkout.availableCollectionPoints as [CollectionPoint],
+    order: checkout?.order as Order,
+    payment: checkout?.payment as Payment,
+    token: checkout.token,
     currency: {
       code: checkout.totalPrice?.currency!,
     },

@@ -4,7 +4,7 @@ import useCommerceCart, { UseCart } from '@commerce/cart/use-cart'
 import { SWRHook } from '@commerce/utils/types'
 import { checkoutCreate, checkoutToCart, getCheckoutId } from '../utils'
 import * as query from '../utils/queries'
-import { GetCartHook } from '@commerce/types/cart'
+import { GetCartHook } from '@framework/types/cart'
 
 export default useCommerceCart as UseCart<typeof handler>
 
@@ -42,7 +42,7 @@ export const handler: SWRHook<GetCartHook> = {
           Object.create(response, {
             isEmpty: {
               get() {
-                return (response.data?.lineItems.length ?? 0) <= 0
+                return (response.data?.lineItems?.length ?? 0) <= 0
               },
               enumerable: true,
             },

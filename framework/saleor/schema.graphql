@@ -2662,7 +2662,7 @@ type CheckoutShippingAddressUpdate {
 """
 Updates the shipping address of the checkout.
 """
-type CheckoutShippingMethodUpdate {
+type CheckoutDeliveryMethodUpdate {
   """
   An updated checkout.
   """
@@ -8415,7 +8415,7 @@ type Mutation {
   """
   Updates the shipping address of the checkout.
   """
-  checkoutShippingMethodUpdate(
+  checkoutDeliveryMethodUpdate(
     """
     Checkout ID.
     """
@@ -8425,7 +8425,7 @@ type Mutation {
     Shipping method.
     """
     shippingMethodId: ID!
-  ): CheckoutShippingMethodUpdate
+  ): CheckoutDeliveryMethodUpdate
 
   """
   Update language code in the existing checkout.

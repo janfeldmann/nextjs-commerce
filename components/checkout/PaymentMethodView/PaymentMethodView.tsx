@@ -1,12 +1,33 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import cn from 'classnames'
 import { Button, Text } from '@components/ui'
 import { useUI } from '@components/ui/context'
 import s from './PaymentMethodView.module.css'
 import SidebarLayout from '@components/common/SidebarLayout'
+import useCart from '@framework/cart/use-cart'
+import useCheckoutPaymentCreate from '@framework/cart/use-checkout-payment-create'
 
 const PaymentMethodView: FC = () => {
   const { setSidebarView } = useUI()
+  const { data: checkoutData } = useCart()
+  const createPayment = useCheckoutPaymentCreate()
+
+  console.log(checkoutData)
+
+  const handleCreatePayment = async () => {
+    await createPayment({
+      amount: checkoutData?.totalPrice,
+      gateway: 'mirumee.payments.mollie',
+    })
+
+    // TODO: WAIT FOR createPayment to finish
+    const response = await fetch('http://localhost:3000/api/checkout')
+    const payment = await response.json()
+
+    if (payment?.success) {
+      window.location.href = payment.redirect
+    }
+  }
 
   return (
     <SidebarLayout handleBack={() => setSidebarView('CHECKOUT_VIEW')}>
@@ -73,7 +94,12 @@ const PaymentMethodView: FC = () => {
         </div>
       </div>
       <div className="sticky z-20 bottom-0 w-full right-0 left-0 py-12 bg-accent-0 border-t border-accent-2 px-6">
-        <Button Component="a" width="100%" variant="ghost">
+        <Button
+          onClick={handleCreatePayment}
+          Component="a"
+          width="100%"
+          variant="ghost"
+        >
           Continue
         </Button>
       </div>

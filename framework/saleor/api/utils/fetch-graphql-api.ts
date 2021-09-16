@@ -24,7 +24,7 @@ const fetchGraphqlApi: GraphQLFetcher = async (query: string, { variables } = {}
       query,
       variables,
     }),
-  })
+  } as any)
 
   const { data, errors, status } = await res.json()
 

@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import type { GetStaticPropsContext } from 'next'
+import { RadioGroup } from '@headlessui/react'
 import useCart from '@framework/cart/use-cart'
 import usePrice from '@framework/product/use-price'
 import commerce from '@lib/api/commerce'
 import { Layout } from '@components/common'
 import { Button, Text } from '@components/ui'
-import { Bag, Cross, Check, MapPin, CreditCard } from '@components/icons'
+import { Bag, Cross, Check, CheckCircle, MapPin } from '@components/icons'
 import { CartItem } from '@components/cart'
 
 export async function getStaticProps({
@@ -15,17 +17,27 @@ export async function getStaticProps({
   const config = { locale, locales }
   const pagesPromise = commerce.getAllPages({ config, preview })
   const siteInfoPromise = commerce.getSiteInfo({ config, preview })
+  const paymentMethodsPromise = await fetch(
+    'http://localhost:3000/api/payment/methods'
+  )
   const { pages } = await pagesPromise
   const { categories } = await siteInfoPromise
+  const { methods: paymentMethods } = await paymentMethodsPromise.json()
+
   return {
-    props: { pages, categories },
+    props: {
+      pages,
+      categories,
+      paymentMethods: paymentMethods?._embedded?.methods,
+    },
   }
 }
 
-export default function Cart() {
+export default function Cart({ paymentMethods }: any) {
   const error = null
   const success = null
   const { data, isLoading, isEmpty } = useCart()
+  const [selected, setSelected] = useState()
 
   const { price: subTotal } = usePrice(
     data && {
@@ -39,6 +51,15 @@ export default function Cart() {
       currencyCode: data.currency.code,
     }
   )
+
+  const { price: shipping } = usePrice(
+    data?.deliveryMethod?.price && {
+      amount: Number(data?.deliveryMethod?.price?.amount),
+      currencyCode: data?.deliveryMethod?.price?.currency,
+    }
+  )
+
+  const submitOrder = () => {}
 
   return (
     <div className="grid lg:grid-cols-12 w-full max-w-7xl mx-auto">
@@ -110,27 +131,115 @@ export default function Cart() {
             <>
               {/* Shipping Address */}
               {/* Only available with customCheckout set to true - Meaning that the provider does offer checkout functionality. */}
-              <div className="rounded-md border border-accent-2 px-6 py-6 mb-4 text-center flex items-center justify-center cursor-pointer hover:border-accent-4">
+              <div className="rounded-md border border-accent-2 px-6 py-6 mb-4 flex cursor-pointer hover:border-accent-4">
                 <div className="mr-5">
                   <MapPin />
                 </div>
-                <div className="text-sm text-center font-medium">
-                  <span className="uppercase">+ Add Shipping Address</span>
-                  {/* <span>
-                    1046 Kearny Street.<br/>
-                    San Franssisco, California
-                  </span> */}
+                <div className="text-sm font-medium">
+                  {data?.shippingAddress ? (
+                    <>
+                      <span className="block mb-2 font-bold text-lg">
+                        Shipping Address
+                      </span>
+                      {data?.shippingAddress?.firstName}{' '}
+                      {data?.shippingAddress?.lastName} <br />
+                      {data?.shippingAddress?.streetAddress1}
+                      <br />
+                      {data?.shippingAddress?.postalCode}
+                      <br />
+                      {data?.shippingAddress?.city}
+                      <br />
+                      {data?.shippingAddress?.country?.code}
+                      <br />
+                    </>
+                  ) : (
+                    <span className="uppercase text-center ">
+                      + Add Shipping Address
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="rounded-md border border-accent-2 px-6 py-6 mb-4 flex cursor-pointer hover:border-accent-4">
+                <div className="mr-5">
+                  <MapPin />
+                </div>
+                <div className="text-sm font-medium">
+                  {data?.billingAddress && (
+                    <>
+                      <span className="block mb-2 font-bold text-lg">
+                        Billing Address
+                      </span>
+                      {data?.billingAddress?.firstName}{' '}
+                      {data?.billingAddress?.lastName} <br />
+                      {data?.billingAddress?.streetAddress1}
+                      <br />
+                      {data?.billingAddress?.postalCode}
+                      <br />
+                      {data?.billingAddress?.city}
+                      <br />
+                      {data?.billingAddress?.country?.code}
+                      <br />
+                    </>
+                  )}
                 </div>
               </div>
               {/* Payment Method */}
               {/* Only available with customCheckout set to true - Meaning that the provider does offer checkout functionality. */}
-              <div className="rounded-md border border-accent-2 px-6 py-6 mb-4 text-center flex items-center justify-center cursor-pointer hover:border-accent-4">
-                <div className="mr-5">
-                  <CreditCard />
-                </div>
-                <div className="text-sm text-center font-medium">
-                  <span className="uppercase">+ Add Payment Method</span>
-                  {/* <span>VISA #### #### #### 2345</span> */}
+              <div>
+                <div className="text-sm font-medium my-8">
+                  <RadioGroup value={selected} onChange={setSelected}>
+                    <RadioGroup.Label className="block mb-4 font-bold text-lg">
+                      Payment method
+                    </RadioGroup.Label>
+                    <div className="space-y-2">
+                      {paymentMethods.map((method: any) => (
+                        <RadioGroup.Option
+                          key={method.id}
+                          value={method}
+                          className={({ active, checked }) =>
+                            `${
+                              active
+                                ? 'ring-2 ring-offset-2 ing-offset-sky-300 ring-white ring-opacity-60'
+                                : ''
+                            }
+                  ${
+                    checked
+                      ? 'bg-sky-900  border-purple-900 bg-opacity-75 text-gray-900'
+                      : 'bg-white'
+                  }
+                    relative border hover:border-purple-300 transition rounded-md px-5 py-4 cursor-pointer flex focus:outline-none`
+                          }
+                        >
+                          {({ active, checked }) => (
+                            <>
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center">
+                                  <RadioGroup.Label
+                                    as="span"
+                                    className={`flex items-center  ${
+                                      checked
+                                        ? 'text-gray-900'
+                                        : 'text-gray-900'
+                                    }`}
+                                  >
+                                    <span className="mr-4">
+                                      <img src={method.image.svg} />
+                                    </span>
+                                    {method.description}
+                                  </RadioGroup.Label>
+                                </div>
+                                {checked && (
+                                  <div className="flex-shrink-0 text-purple-900">
+                                    <CheckCircle className="w-6 h-6" />
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </RadioGroup.Option>
+                      ))}
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
             </>
@@ -147,7 +256,9 @@ export default function Cart() {
               </li>
               <li className="flex justify-between py-1">
                 <span>Estimated Shipping</span>
-                <span className="font-bold tracking-wide">FREE</span>
+                <span className="font-bold tracking-wide">
+                  {shipping ? <>{shipping}</> : '-'}
+                </span>
               </li>
             </ul>
             <div className="flex justify-between border-t border-accent-2 py-3 font-bold mb-10">
@@ -162,8 +273,8 @@ export default function Cart() {
                   Continue Shopping
                 </Button>
               ) : (
-                <Button href="/checkout" Component="a" width="100%">
-                  Proceed to Checkout
+                <Button width="100%" onClick={submitOrder}>
+                  Order now
                 </Button>
               )}
             </div>

@@ -102,6 +102,7 @@ const CartItem = ({
               {item.name}
             </span>
           </Link>
+          <span>{item.variant.name}</span>
           {options && options.length > 0 && (
             <div className="flex items-center pb-1">
               {options.map((option: ItemOption, i: number) => (

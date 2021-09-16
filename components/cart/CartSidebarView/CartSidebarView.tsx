@@ -20,12 +20,21 @@ const CartSidebarView: FC = () => {
       currencyCode: data.currency.code,
     }
   )
+
   const { price: total } = usePrice(
     data && {
       amount: Number(data.totalPrice),
       currencyCode: data.currency.code,
     }
   )
+
+  const { price: shipping } = usePrice(
+    data?.deliveryMethod?.price && {
+      amount: Number(data?.deliveryMethod?.price?.amount),
+      currencyCode: data?.deliveryMethod?.price?.currency,
+    }
+  )
+
   const handleClose = () => closeSidebar()
   const goToCheckout = () => setSidebarView('CHECKOUT_VIEW')
 
@@ -101,7 +110,9 @@ const CartSidebarView: FC = () => {
               </li>
               <li className="flex justify-between py-1">
                 <span>Shipping</span>
-                <span className="font-bold tracking-wide">FREE</span>
+                <span className="font-bold tracking-wide">
+                  {shipping ? <>{shipping}</> : '-'}
+                </span>
               </li>
             </ul>
             <div className="flex justify-between border-t border-accent-2 py-3 font-bold mb-2">
