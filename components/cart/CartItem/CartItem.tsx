@@ -80,13 +80,23 @@ const CartItem = ({
       {...rest}
     >
       <div className="flex flex-row space-x-4 py-4">
-        <div className="w-16 h-16 bg-violet relative overflow-hidden cursor-pointer z-0">
+        <div
+          className={cn(
+            'bg-violet relative overflow-hidden cursor-pointer z-0',
+            {
+              'w-20': variant === 'display',
+              'h-20': variant === 'display',
+              'w-40': variant !== 'display',
+              'h-40': variant !== 'display',
+            }
+          )}
+        >
           <Link href={`/product/${item.path}`}>
             <Image
               onClick={() => closeSidebarIfPresent()}
               className={s.productImage}
-              width={150}
-              height={150}
+              width={variant === 'default' ? 150 : 80}
+              height={variant === 'default' ? 150 : 80}
               src={item.variant.image!.url}
               alt={item.variant.image!.altText}
               unoptimized
@@ -132,7 +142,7 @@ const CartItem = ({
             <div className="text-sm tracking-wider">{quantity}x</div>
           )}
         </div>
-        <div className="flex flex-col justify-between space-y-2 text-sm">
+        <div className="flex flex-col justify-between space-y-2 text-md">
           <span>{price}</span>
         </div>
       </div>

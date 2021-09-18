@@ -1,8 +1,10 @@
 import {
   AddressInput,
   CheckoutComplete,
+  Money,
   Order,
   PaymentInput,
+  TaxedMoney,
 } from '@framework/schema'
 import type { Discount, Measurement, Image } from './common'
 
@@ -82,10 +84,11 @@ export type Cart = {
   // Duties, taxes, shipping and discounts excluded.
   lineItemsSubtotalPrice: number
   // Price of the cart before duties, shipping and taxes.
-  subtotalPrice: number
+  subtotalPrice: TaxedMoney
   // The sum of all the prices of all the items in the cart.
   // Duties, taxes and discounts included.
-  totalPrice: number
+  totalPrice: TaxedMoney
+  shippingPrice: TaxedMoney
   // Discounts that have been applied on the cart.
   discounts?: Discount[]
 }

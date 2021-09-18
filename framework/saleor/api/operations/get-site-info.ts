@@ -1,16 +1,11 @@
 import type { OperationContext } from '@commerce/api/operations'
-import { Category } from '@commerce/types/site'
+import { GetSiteInfoResult } from '@framework/types/site'
 import type { SaleorConfig, Provider } from '..'
 
-import { getCategories, getVendors } from '../../utils'
-
-interface GetSiteInfoResult {
-  categories: Category[]
-  brands: any[]
-}
+import { getCategories, getVendors, getSiteInfo } from '../../utils'
 
 export default function getSiteInfoOperation({ commerce }: OperationContext<Provider>) {
-  async function getSiteInfo({
+  async function getSiteInfoOperation({
     query,
     config,
     variables,
@@ -18,18 +13,19 @@ export default function getSiteInfoOperation({ commerce }: OperationContext<Prov
     query?: string
     config?: Partial<SaleorConfig>
     preview?: boolean
-    variables?: any 
+    variables?: any
   } = {}): Promise<GetSiteInfoResult> {
     const cfg = commerce.getConfig(config)
-
     const categories = await getCategories(cfg)
     const brands = await getVendors(cfg)
+    const siteInfo = await getSiteInfo(cfg)
 
     return {
       categories,
       brands,
+      siteInfo,
     }
   }
 
-  return getSiteInfo
+  return getSiteInfoOperation
 }

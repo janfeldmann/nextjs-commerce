@@ -12,22 +12,41 @@ const PaymentMethodView: FC = () => {
   const { data: checkoutData } = useCart()
   const createPayment = useCheckoutPaymentCreate()
 
-  console.log(checkoutData)
-
   const handleCreatePayment = async () => {
+    // Payload for creating paymentinside payment service provider system (PSP)
+    const payload = {
+      amount: {
+        currency: checkoutData?.currency?.code,
+        value: checkoutData?.totalPrice.toFixed(2), // Mollie needs two decimal places --> TODO: move check to mollie
+      },
+      description: 'Payment description', // TODO: Make dynamic
+      redirectUrl: 'http://localhost:3000/checkout/success', // TODO: Move to global config
+      locale: 'de_DE', // TODO: Make dynamic
+      method: 'paypal', // TODO: Make dynamic
+    }
+
+    // Create payment inside PSP
+    const response = await fetch('http://localhost:3000/api/checkout', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    const payment = await response.json()
+
+    // Create payment inside shop provider system
     await createPayment({
       amount: checkoutData?.totalPrice,
       gateway: 'mirumee.payments.mollie',
+      metadata: payment?.metadata,
+      redirectUrl: payment?.redirectUrl,
     })
-
-    // TODO: WAIT FOR createPayment to finish
-    const response = await fetch('http://localhost:3000/api/checkout')
-    const payment = await response.json()
-
-    if (payment?.success) {
-      window.location.href = payment.redirect
-    }
   }
+
+  useEffect(() => {
+    console.log('CHECKOUT DATA!', checkoutData)
+  }, [checkoutData])
 
   return (
     <SidebarLayout handleBack={() => setSidebarView('CHECKOUT_VIEW')}>

@@ -35,6 +35,8 @@ export const handler: SWRHook<SearchProductsHook> = {
       variables: getSearchVariables(input),
     })
 
+    console.log('HEY', getSearchVariables(input))
+
     let edges
 
     if (categoryId) {

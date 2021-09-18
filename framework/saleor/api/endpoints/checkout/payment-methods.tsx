@@ -1,25 +1,18 @@
 import { CommerceAPI, GetAPISchema, createEndpoint } from '@commerce/api'
 import paymentMethodsEndpoint from '@commerce/api/endpoints/paymentMethods'
 import { PaymentMethodsSchema } from '@commerce/types/paymentMethods'
-
+import { getPaymentMethods } from '@lib/api/payment/mollie'
 export type CheckoutAPI = GetAPISchema<CommerceAPI, PaymentMethodsSchema>
 
 export type CheckoutEndpoint = CheckoutAPI['endpoint']
 
 const paymentMethods: CheckoutEndpoint['handlers']['paymentMethods'] = async ({ req, res, config }) => {
   try {
-    const response = await fetch('https://api.mollie.com/v2/methods?locale=de_DE', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer test_zkUA7p4QE7ga9urrGSg8WNJV38R6HE',
-      },
-    })
-
-    const paymentResponse = await response.json()
-
+    const body = req.body
+    const response = await getPaymentMethods(body)
     res.status(200)
     res.setHeader('Content-Type', 'application/json')
-    res.write(JSON.stringify({ success: true, methods: paymentResponse }))
+    res.write(JSON.stringify(response))
     res.end()
   } catch (error) {
     console.error(error)

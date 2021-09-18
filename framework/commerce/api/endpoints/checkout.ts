@@ -12,6 +12,7 @@ const checkoutEndpoint: GetAPISchema<
   if (
     !isAllowedOperation(req, res, {
       GET: handlers['checkout'],
+      POST: handlers['checkout'],
     })
   ) {
     return

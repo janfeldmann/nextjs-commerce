@@ -10,5 +10,6 @@ export { CustomerCurrent } from './customer-current'
 // getCustomerIdQuery
 export { CustomerOne } from './customer-one'
 
+export { getSiteInfoQuery } from './get-site-info-query'
 export { getAllProductsPathsQuery } from './get-all-products-paths-query'
 export { getAllProductVendors } from './get-all-product-vendors-query'

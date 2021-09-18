@@ -5,12 +5,9 @@ import { useHook, useMutationHook } from '@commerce/utils/use-hook'
 import { mutationFetcher } from '@commerce/utils/default-fetcher'
 import type { HookFetcherFn, HookFetcherContext, MutationHook, MutationHookContext } from '@commerce/utils/types'
 import { ValidationError } from '@commerce/utils/errors'
-
-import useCart from './use-cart'
-import type { UpdateBillingAddress } from '../types'
-import { checkoutToCart } from '../utils'
+import { updateMetadata } from '../utils'
 import { getCheckoutId } from '../utils'
-import { Mutation, MutationCheckoutPaymentCreateArgs, AddressInput, PaymentInput } from '../schema'
+import { Mutation, MutationCheckoutPaymentCreateArgs, PaymentInput } from '../schema'
 
 import * as mutation from '../utils/mutations'
 
@@ -32,7 +29,11 @@ export default UseCreatePayment as UseCreatePayment<typeof handler>
 
 export const handler = {
   fetchOptions: { query: mutation.CheckoutPaymentCreate },
-  async fetcher({ input: { gateway, amount }, options, fetch }: HookFetcherContext<CreatePaymentHook>) {
+  async fetcher({
+    input: { gateway, amount, metadata, redirectUrl },
+    options,
+    fetch,
+  }: HookFetcherContext<CreatePaymentHook>) {
     const checkoutToken = getCheckoutId().checkoutToken
 
     const { checkoutPaymentCreate } = await fetch<Mutation, MutationCheckoutPaymentCreateArgs>({
@@ -44,9 +45,15 @@ export const handler = {
       },
     })
 
-    console.log('checkoutPaymentCreate', checkoutPaymentCreate)
+    if (metadata) {
+      await updateMetadata(fetch, checkoutPaymentCreate?.checkout?.id, metadata)
+    }
 
-    return checkoutToCart(checkoutPaymentCreate)
+    if (typeof window !== undefined && redirectUrl) {
+      window.location.href = redirectUrl
+    }
+
+    return checkoutPaymentCreate
   },
   useHook:
     ({ fetch }: MutationHookContext<CreatePaymentHook>) =>
@@ -54,38 +61,51 @@ export const handler = {
       ctx: {
         amount?: T
         gateway?: T
+        metadata?: T
+        redirectUrl?: string
         wait?: number
       } = {}
     ) => {
-      const { amount: amountFromContext, gateway: gatewayFromContext } = ctx
-      const { mutate } = useCart() as any
+      const {
+        amount: amountFromContext,
+        gateway: gatewayFromContext,
+        metadata: metadataFromContext,
+        redirectUrl: redirectUrlFromContext,
+      } = ctx
 
       return useCallback(
-        debounce(async (input: PaymentInput) => {
-          const amount = input.amount ?? amountFromContext
-          const gateway = input.gateway ?? gatewayFromContext
+        debounce(
+          async (input: {
+            amount: PaymentInput['amount']
+            gateway: PaymentInput['gateway']
+            metadata: PaymentInput['gateway']
+            redirectUrl: string
+          }) => {
+            const amount = input.amount ?? amountFromContext
+            const gateway = input.gateway ?? gatewayFromContext
+            const metadata = input.metadata ?? metadataFromContext
+            const redirectUrl = input.redirectUrl ?? redirectUrlFromContext
 
-          console.log('MAKE CALL!')
+            if (!amount || !gateway) {
+              throw new ValidationError({
+                message: 'Invalid input used for this operation',
+              })
+            }
 
-          if (!amount || !gateway) {
-            throw new ValidationError({
-              message: 'Invalid input used for this operation',
+            await fetch({
+              input: {
+                gateway,
+                amount,
+                metadata,
+                redirectUrl,
+              },
             })
-          }
 
-          const data = await fetch({
-            input: {
-              gateway,
-              amount,
-            },
-          })
-
-          console.log('Checkout payment data', data)
-
-          await mutate(data, false)
-          return null
-        }, ctx.wait ?? 500),
-        [fetch, mutate]
+            return null
+          },
+          ctx.wait ?? 500
+        ),
+        [fetch]
       )
     },
 }

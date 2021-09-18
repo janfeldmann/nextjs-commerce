@@ -46,10 +46,34 @@ export const CheckoutDetails = /* GraphQL */ `
       gross {
         amount
       }
+      net {
+        amount
+      }
+      tax {
+        amount
+      }
     }
     subtotalPrice {
       currency
       gross {
+        amount
+      }
+      net {
+        amount
+      }
+      tax {
+        amount
+      }
+    }
+    shippingPrice {
+      currency
+      gross {
+        amount
+      }
+      net {
+        amount
+      }
+      tax {
         amount
       }
     }

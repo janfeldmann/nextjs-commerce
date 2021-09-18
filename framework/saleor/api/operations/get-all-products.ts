@@ -47,7 +47,7 @@ export default function getAllProductsOperation({ commerce }: OperationContext<P
       }
     )
 
-    console.log(data)
+    console.log('PRODUCTS', data)
 
     if (featured) {
       const products =

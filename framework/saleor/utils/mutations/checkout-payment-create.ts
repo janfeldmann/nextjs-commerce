@@ -21,6 +21,7 @@ export const CheckoutPaymentCreate = /* GraphQL */ `
         paymentMethodType
         transactions {
           id
+          gatewayResponse
         }
         order {
           status

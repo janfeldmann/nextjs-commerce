@@ -29,6 +29,8 @@ export const handler: SWRHook<GetCartHook> = {
       checkout = await checkoutCreate(fetch)
     }
 
+    console.log('CHECKOUT!', checkout)
+
     return checkoutToCart(checkout)
   },
   useHook:

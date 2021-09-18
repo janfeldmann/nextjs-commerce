@@ -7191,6 +7191,7 @@ export type PaymentInput = {
   amount?: Maybe<Scalars['PositiveDecimal']>
   /** URL of a storefront view where user should be redirected after requiring additional actions. Payment with additional actions will not be finished if this field is not provided. */
   returnUrl?: Maybe<Scalars['String']>
+  metadata?: Maybe[MetadataInput]
 }
 
 /** Refunds the captured payment amount. */

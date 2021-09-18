@@ -13,10 +13,10 @@ const isVendure = provider === 'vendure'
 
 module.exports = withCommerceConfig({
   commerce,
-  i18n: {
-    locales: ['en-US', 'es'],
-    defaultLocale: 'en-US',
-  },
+  // i18n: {
+  //   locales: ['en-US', 'es'],
+  //   defaultLocale: 'en-US',
+  // },
   rewrites() {
     return [
       (isBC || isShopify || isSwell || isVendure) && {

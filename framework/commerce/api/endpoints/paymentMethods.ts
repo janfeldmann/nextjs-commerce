@@ -12,6 +12,7 @@ const paymentMethodsEndpoint: GetAPISchema<
   if (
     !isAllowedOperation(req, res, {
       GET: handlers['paymentMethods'],
+      POST: handlers['paymentMethods'],
     })
   ) {
     return

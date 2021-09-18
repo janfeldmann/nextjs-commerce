@@ -30,6 +30,8 @@ export const saleorProvider = {
     useUpdateDeliveryMethod,
     useUpdateBillingAddress,
     useUpdateShippingAddress,
+  },
+  checkout: {
     usePayment,
     useCheckoutComplete,
   },

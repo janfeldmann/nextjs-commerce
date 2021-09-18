@@ -3,10 +3,12 @@ export { getSortVariables } from './get-sort-variables'
 export { default as handleFetchResponse } from './handle-fetch-response'
 export { default as getSearchVariables } from './get-search-variables'
 export { default as getVendors } from './get-vendors'
+export { default as getSiteInfo } from './get-site-info'
 export { default as getCategories } from './get-categories'
 export { default as getCheckoutId } from './get-checkout-id'
 
 export { default as checkoutCreate } from './checkout-create'
+export { default as updateMetadata } from './update-meta-data'
 export { checkoutAttach } from './checkout-attach'
 
 export { default as checkoutToCart } from './checkout-to-cart'

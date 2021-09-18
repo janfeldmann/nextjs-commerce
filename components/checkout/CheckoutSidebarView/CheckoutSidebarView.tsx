@@ -11,31 +11,12 @@ import PaymentWidget from '../PaymentWidget'
 import SidebarLayout from '@components/common/SidebarLayout'
 import useDeliveryMethodUpdate from '@framework/cart/use-checkout-delivery-method-update'
 import s from './CheckoutSidebarView.module.css'
+import Totals from '@components/checkout/Totals'
 
 const CheckoutSidebarView: FC = () => {
   const { setSidebarView } = useUI()
   const { data } = useCart()
   const deliveryMethodUpdate = useDeliveryMethodUpdate()
-
-  const { price: subTotal } = usePrice(
-    data && {
-      amount: Number(data.subtotalPrice),
-      currencyCode: data.currency.code,
-    }
-  )
-  const { price: total } = usePrice(
-    data && {
-      amount: Number(data.totalPrice),
-      currencyCode: data.currency.code,
-    }
-  )
-
-  const { price: shipping } = usePrice(
-    data?.deliveryMethod?.price && {
-      amount: Number(data?.deliveryMethod?.price?.amount),
-      currencyCode: data?.deliveryMethod?.price?.currency,
-    }
-  )
 
   const handleSetDeliveryMethod = async (methodId: string) => {
     if (data?.shippingAddress) {
@@ -100,26 +81,7 @@ const CheckoutSidebarView: FC = () => {
       )}
 
       <div className="flex-shrink-0 px-6 py-6 sm:px-6 sticky z-20 bottom-0 w-full right-0 left-0 bg-accent-0 border-t text-sm">
-        <ul className="pb-2">
-          <li className="flex justify-between py-1">
-            <span>Subtotal</span>
-            <span>{subTotal}</span>
-          </li>
-          <li className="flex justify-between py-1">
-            <span>Taxes</span>
-            <span>Calculated at checkout</span>
-          </li>
-          <li className="flex justify-between py-1">
-            <span>Shipping</span>
-            <span className="font-bold tracking-wide">
-              {shipping ? <>{shipping}</> : '-'}
-            </span>
-          </li>
-        </ul>
-        <div className="flex justify-between border-t border-accent-2 py-3 font-bold mb-2">
-          <span>Total</span>
-          <span>{total}</span>
-        </div>
+        <Totals />
         <div>
           {/* Once data is correcly filled */}
           {/* <Button Component="a" width="100%">

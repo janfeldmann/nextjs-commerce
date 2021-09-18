@@ -1,4 +1,4 @@
-import { Order, PaymentInput } from '@framework/schema'
+import { MetadataInput, Order, PaymentInput } from '@framework/schema'
 
 export type CheckoutCompleteHook = {
   data: { order: Order } | null
@@ -9,20 +9,31 @@ export type CheckoutCompleteHook = {
 }
 
 export type CreatePaymentHook = {
-  data: PaymentInput | null
+  data: {
+    amount?: PaymentInput['amount']
+    gateway?: PaymentInput['gateway']
+    metadata?: PaymentInput['metadata']
+    redirectUrl?: string
+  } | null
   input: {
     amount?: PaymentInput['amount']
     gateway?: PaymentInput['gateway']
+    metadata?: PaymentInput['metadata']
+    redirectUrl?: string
     wait?: number
   }
   fetcherInput: {
     amount?: PaymentInput['amount']
     gateway?: PaymentInput['gateway']
+    metadata?: PaymentInput['metadata']
+    redirectUrl?: string
   }
   body: { amount?: PaymentInput['amount']; gateway?: PaymentInput['gateway'] }
   actionInput: {
     amount?: PaymentInput['amount']
     gateway?: PaymentInput['gateway']
+    metadata?: PaymentInput['metadata']
+    redirectUrl?: string
   }
 }
 

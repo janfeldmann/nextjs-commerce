@@ -8,6 +8,7 @@ import { Layout } from '@components/common'
 import { Button, Text } from '@components/ui'
 import { Bag, Cross, Check, CheckCircle, MapPin } from '@components/icons'
 import { CartItem } from '@components/cart'
+import Totals from '@components/checkout/Totals'
 
 export async function getStaticProps({
   preview,
@@ -18,46 +19,36 @@ export async function getStaticProps({
   const pagesPromise = commerce.getAllPages({ config, preview })
   const siteInfoPromise = commerce.getSiteInfo({ config, preview })
   const paymentMethodsPromise = await fetch(
-    'http://localhost:3000/api/payment/methods'
+    'http://localhost:3000/api/payment/methods',
+    {
+      method: 'POST',
+      // Example with amount and currency to only receive payment methods applicable for currency and amount, e. g. Giropay only accepts EUR as currency
+      // body: JSON.stringify({ locale: 'de_DE', amount: '100.00', currency: 'USD' }),
+      body: JSON.stringify({ locale: 'de_DE' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   )
   const { pages } = await pagesPromise
-  const { categories } = await siteInfoPromise
+  const { categories, siteInfo } = await siteInfoPromise
   const { methods: paymentMethods } = await paymentMethodsPromise.json()
 
   return {
     props: {
       pages,
       categories,
+      siteInfo,
       paymentMethods: paymentMethods?._embedded?.methods,
     },
   }
 }
 
-export default function Cart({ paymentMethods }: any) {
+export default function Cart({ paymentMethods, siteInfo }: any) {
   const error = null
   const success = null
   const { data, isLoading, isEmpty } = useCart()
   const [selected, setSelected] = useState()
-
-  const { price: subTotal } = usePrice(
-    data && {
-      amount: Number(data.subtotalPrice),
-      currencyCode: data.currency.code,
-    }
-  )
-  const { price: total } = usePrice(
-    data && {
-      amount: Number(data.totalPrice),
-      currencyCode: data.currency.code,
-    }
-  )
-
-  const { price: shipping } = usePrice(
-    data?.deliveryMethod?.price && {
-      amount: Number(data?.deliveryMethod?.price?.amount),
-      currencyCode: data?.deliveryMethod?.price?.currency,
-    }
-  )
 
   const submitOrder = () => {}
 
@@ -245,26 +236,7 @@ export default function Cart({ paymentMethods }: any) {
             </>
           )}
           <div className="border-t border-accent-2">
-            <ul className="py-3">
-              <li className="flex justify-between py-1">
-                <span>Subtotal</span>
-                <span>{subTotal}</span>
-              </li>
-              <li className="flex justify-between py-1">
-                <span>Taxes</span>
-                <span>Calculated at checkout</span>
-              </li>
-              <li className="flex justify-between py-1">
-                <span>Estimated Shipping</span>
-                <span className="font-bold tracking-wide">
-                  {shipping ? <>{shipping}</> : '-'}
-                </span>
-              </li>
-            </ul>
-            <div className="flex justify-between border-t border-accent-2 py-3 font-bold mb-10">
-              <span>Total</span>
-              <span>{total}</span>
-            </div>
+            <Totals siteInfo={siteInfo} />
           </div>
           <div className="flex flex-row justify-end">
             <div className="w-full lg:w-72">
