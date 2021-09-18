@@ -9,7 +9,7 @@ export type CheckoutEndpoint = CheckoutAPI['endpoint']
 const paymentMethods: CheckoutEndpoint['handlers']['paymentMethods'] = async ({ req, res, config }) => {
   try {
     const body = req.body
-    const response = await getPaymentMethods(body)
+    const response = await getPaymentMethods(body, config)
     res.status(200)
     res.setHeader('Content-Type', 'application/json')
     res.write(JSON.stringify(response))

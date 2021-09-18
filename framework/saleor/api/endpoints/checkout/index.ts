@@ -11,7 +11,7 @@ const checkout: CheckoutEndpoint['handlers']['checkout'] = async ({ req, res, co
   const body = req.body
 
   try {
-    const response = await createPayment(body)
+    const response = await createPayment(body, config)
 
     res.status(200)
     res.setHeader('Content-Type', 'application/json')

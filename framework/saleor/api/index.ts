@@ -14,12 +14,14 @@ import fetchGraphqlApi from './utils/fetch-graphql-api'
 
 export interface SaleorConfig extends CommerceAPIConfig {
   storeChannel: string
+  mollieApiToken?: string
 }
 
 const config: SaleorConfig = {
   locale: 'en-US',
   commerceUrl: Const.API_URL,
   apiToken: Const.SALEOR_TOKEN,
+  mollieApiToken: Const.MOLLIE_API_KEY,
   cartCookie: Const.CHECKOUT_ID_COOKIE,
   cartCookieMaxAge: 60 * 60 * 24 * 30,
   fetch: fetchGraphqlApi,
@@ -27,10 +29,7 @@ const config: SaleorConfig = {
   storeChannel: Const.API_CHANNEL,
 }
 
-import {
-  CommerceAPI,
-  getCommerceApi as commerceApi,
-} from '@commerce/api'
+import { CommerceAPI, getCommerceApi as commerceApi } from '@commerce/api'
 
 import * as operations from './operations'
 
@@ -42,8 +41,6 @@ export type Provider = typeof provider
 
 export type SaleorAPI<P extends Provider = Provider> = CommerceAPI<P>
 
-export function getCommerceApi<P extends Provider>(
-  customProvider: P = provider as any
-): SaleorAPI<P> {
+export function getCommerceApi<P extends Provider>(customProvider: P = provider as any): SaleorAPI<P> {
   return commerceApi(customProvider)
 }

@@ -17,7 +17,7 @@ const PaymentMethodView: FC = () => {
     const payload = {
       amount: {
         currency: checkoutData?.currency?.code,
-        value: checkoutData?.totalPrice.toFixed(2), // Mollie needs two decimal places --> TODO: move check to mollie
+        value: checkoutData?.totalPrice?.gross?.amount.toFixed(2), // Mollie needs two decimal places --> TODO: move check to mollie
       },
       description: 'Payment description', // TODO: Make dynamic
       redirectUrl: 'http://localhost:3000/checkout/success', // TODO: Move to global config
@@ -37,7 +37,7 @@ const PaymentMethodView: FC = () => {
 
     // Create payment inside shop provider system
     await createPayment({
-      amount: checkoutData?.totalPrice,
+      amount: checkoutData?.totalPrice?.gross?.amount.toFixed(2),
       gateway: 'mirumee.payments.mollie',
       metadata: payment?.metadata,
       redirectUrl: payment?.redirectUrl,
